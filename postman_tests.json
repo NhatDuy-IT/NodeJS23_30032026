@@ -1,0 +1,222 @@
+{
+  "info": {
+    "name": "NNPTUD-S2 Messages API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Register User1",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"123456\",\n  \"email\": \"user1@test.com\"\n}"
+        },
+        "url": {
+          "raw": "localhost:3000/auth/register",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "2. Login User1 → Save Token",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const responseJson = pm.response.json();",
+              "pm.collectionVariables.set(\"token_user1\", responseJson);",
+              "pm.collectionVariables.set(\"user1_id\", pm.response.json()._id);",
+              "console.log('Token User1:', responseJson);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"user1\",\n  \"password\": \"123456\"\n}"
+        },
+        "url": {
+          "raw": "localhost:3000/auth/login",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auth", "login"]
+        }
+      }
+    },
+    {
+      "name": "3. Register User2",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"user2\",\n  \"password\": \"123456\",\n  \"email\": \"user2@test.com\"\n}"
+        },
+        "url": {
+          "raw": "localhost:3000/auth/register",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["auth", "register"]
+        }
+      }
+    },
+    {
+      "name": "4. Messages GET /:userID (empty)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_user1}}"
+          }
+        ],
+        "url": {
+          "raw": "localhost:3000/messages/{{user2_id}}",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["messages", "{{user2_id}}"]
+        }
+      }
+    },
+    {
+      "name": "5. POST Text Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_user1}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "to",
+              "value": "{{user2_id}}",
+              "type": "text"
+            },
+            {
+              "key": "content",
+              "value": "Xin chào user2! Đây là tin nhắn text",
+              "type": "text"
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:3000/messages",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["messages"]
+        }
+      }
+    },
+    {
+      "name": "6. POST File Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_user1}}"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "to",
+              "value": "{{user2_id}}",
+              "type": "text"
+            },
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/test-image.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "localhost:3000/messages",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["messages"]
+        }
+      }
+    },
+    {
+      "name": "7. GET All Messages 2 chiều",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_user1}}"
+          }
+        ],
+        "url": {
+          "raw": "localhost:3000/messages/{{user2_id}}",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["messages", "{{user2_id}}"]
+        }
+      }
+    },
+    {
+      "name": "8. GET Latest Conversations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token_user1}}"
+          }
+        ],
+        "url": {
+          "raw": "localhost:3000/messages",
+          "host": ["localhost"],
+          "port": "3000",
+          "path": ["messages"]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "token_user1",
+      "value": ""
+    },
+    {
+      "key": "user1_id",
+      "value": ""
+    },
+    {
+      "key": "user2_id",
+      "value": ""
+    }
+  ]
+}
